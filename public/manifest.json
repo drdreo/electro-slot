@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Electro Ultraways",
+  "name": "Electro Ultraways | A React slot machine",
   "icons": [
     {
       "src": "favicon.ico",
