@@ -4,18 +4,19 @@ export function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-
-function generateReel() {
+function generateReel(reelNum) {
     let totalHeight = 0;
     const maxHeight = 8;
 
     const reel = [];
     while (totalHeight < maxHeight) {
-        let symbolHeight = getRandom(1, 3);
+        let symbolHeight = getRandom(1, 4);
         if (totalHeight + symbolHeight > maxHeight) {
             symbolHeight = maxHeight - totalHeight;
         }
-        const value = getRandom(1, 9);
+
+        // prevent wilds in first reel due to hit detection problem
+        const value = reelNum === 0 ? getRandom(1, 8) : getRandom(1, 9);
         reel.push({value, height: symbolHeight});
 
         // insert null values for height
@@ -31,10 +32,14 @@ function generateReel() {
 export function generateMatrix() {
     const matrix = [];
     for (let i = 0; i < 6; i++) {
-        matrix.push(generateReel());
+        matrix.push(generateReel(i));
     }
 
     return matrix;
+}
+
+export function prettyPrintMatrix(matrix) {
+    console.table(matrix);
 }
 
 export function calculateMegaways(matrix) {
@@ -49,23 +54,55 @@ export function getCountSymbolsInReel(reel) {
 
 export function calculateHit(matrix) {
 
+    const hits = [];
     for (let symbol of matrix[0]) {
-        let reel = 1;
-
-        while (symbol && matrix[reel] && isSymbolInReel(symbol.value, matrix[reel])) {
-            matrix[reel].map(sym => {
-                if (sym && sym.value === symbol.value) {
-                    sym.hit = true;
+        // ignore null symbols or already hit symbols
+        if (symbol && (hits.every(hit => !hit.hasAlreadyHit(symbol.value)) || symbol.value === 9)) {
+            let hit = new Hit();
+            for (let i = 0; i < matrix.length; i++) {
+                const reel = matrix[i];
+                let connected = false;
+                for (let sym of reel) {
+                    //  WILDS are value 9
+                    // 1. check if current symbol is not null
+                    // 2. hit same symbol
+                    // 3. if current symbol is wild -> hit
+                    if (sym && (symbol.value === sym.value || sym.value === 9)) {
+                        hit.addSymbol({...sym, position: {r: i}});
+                        connected = true;
+                    }
                 }
-                return sym;
-            });
-            reel++;
+
+                // if the symbol didnt connect, we can stop checking
+                if (!connected) {
+                    break;
+                }
+                // if third reel connected
+                if (i === 2 && connected) {
+                    hit.isHit = true;
+                }
+            }
+            if (hit.isHit) {
+                hits.push(hit);
+            }
         }
     }
-
-    return matrix;
+    return hits;
 }
 
-function isSymbolInReel(value, reel) {
-    return reel.filter(el => el).some(symbol => symbol.value === value);
+class Hit {
+    symbols = [];
+    value;
+    isHit = false;
+
+    addSymbol(symbol) {
+        if (symbol.value !== 9) {
+            this.value = symbol.value;
+        }
+        this.symbols.push(symbol);
+    }
+
+    hasAlreadyHit(value) {
+        return this.symbols.some(sym => sym.value === value);
+    }
 }

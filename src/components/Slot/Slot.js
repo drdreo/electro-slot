@@ -56,14 +56,36 @@ const Slot = () => {
         // check if the last symbol finished
         for (let i = 0; i < 6; i++) {
             const currentCount = finishedReels.filter(r => r === i).length;
-            if (currentCount != getCountSymbolsInReel(matrix[i])) {
+            if (currentCount !== getCountSymbolsInReel(matrix[i])) {
                 finished = false;
                 break;
             }
         }
-        if (finished) {
-            console.log(calculateHit({...matrix}));
-            console.log("Finished: " + matrix);
+        if (finished && !context.finished) {
+            const newMatrix = [...matrix];
+            console.log(newMatrix);
+            const hits = calculateHit(newMatrix);
+            console.log(hits);
+
+            for (let hit of hits) {
+                // mark all symbols in hit reel
+                for (let sym of hit.symbols) {
+                    newMatrix[sym.position.r].map(symbol => {
+                        if (symbol && (symbol.value === hit.value || symbol.value === 9)) {
+                            symbol.hit = true;
+                        }
+                    });
+                }
+
+            }
+
+            let newContext = {...context, finished: true};
+            if (hits.length) {
+                console.log(newMatrix);
+                newContext.matrix = newMatrix;
+            }
+            setContext(newContext);
+
         }
     }
 

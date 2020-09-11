@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import styled from "styled-components";
 import {ReactComponent as LED} from "../assets/led.svg";
 import {ReactComponent as Resistor} from "../assets/resistor.svg";
@@ -8,7 +8,9 @@ import {ReactComponent as Transistor} from "../assets/transistor.svg";
 import {ReactComponent as Processor} from "../assets/processor.svg";
 import {ReactComponent as CPU} from "../assets/cpu.svg";
 import {ReactComponent as GPU} from "../assets/gpu.svg";
+import {ReactComponent as Wild} from "../assets/wild.svg";
 import {getRandom} from "../utils";
+import {SlotContext} from "../context/slot-context";
 
 const SymbolImages = {
     1: Resistor,
@@ -17,9 +19,9 @@ const SymbolImages = {
     4: Transistor,
     5: LED,
     6: Processor,
-    7: Processor,
-    8: CPU,
-    9: GPU
+    7: CPU,
+    8: GPU,
+    9: Wild
 };
 
 const StyledSymbolContainer = styled.div`
@@ -31,13 +33,14 @@ const StyledSymbolContainer = styled.div`
   overflow: hidden;
   padding: 3px;
   border: ${props => props.hit ? "2px solid gold" : ""};
+  transition: all 500ms ease;
   
   .inner {
     position:relative;
     display: flex;
     transition: transform ${props => props.timer ? props.timer : 1000}ms ease;
     &.spinning{
-      transform: translateY(-1000px);
+      transform: translateY(${props => !props.finished ? "-1000px" : ""});
     }
     .image{
       width: 50px;
@@ -47,25 +50,30 @@ const StyledSymbolContainer = styled.div`
 `;
 
 const Symbol = (props) => {
+
+    const {value, style, hit, timer, onFinish} = props;
+    const [context] = useContext(SlotContext);
+
     const [spinning, setSpinning] = useState(true);
-    const SymbolTag = SymbolImages[props.value];
+    const SymbolTag = SymbolImages[value];
+
 
     useEffect(() => {
-        const timer = setTimeout(() => {
+        const t = setTimeout(() => {
             setSpinning(false);
         }, getRandom(90, 150));
-        return () => clearTimeout(timer);
+        return () => clearTimeout(t);
     }, []);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            props.onFinish();
-        }, props.timer);
-        return () => clearTimeout(timer);
-    }, [props]);
+        const t = setTimeout(() => {
+            onFinish();
+        }, timer);
+        return () => clearTimeout(t);
+    }, [onFinish, timer]);
 
     return (
-        <StyledSymbolContainer timer={props.timer} hit={props.hit} style={props.style}>
+        <StyledSymbolContainer timer={timer} hit={hit} style={style} finished={context.finished}>
             <div className={`inner ${spinning ? "spinning" : ""}`}>
                 <SymbolTag className="image"/>
             </div>

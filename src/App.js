@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import "./App.css";
 import Header from "./components/Header";
 import Slot from "./components/Slot/Slot";
@@ -6,7 +6,19 @@ import {generateSlotContext, SlotContext} from "./context/slot-context";
 
 function App() {
     const [context, setContext] = useState(useContext(SlotContext));
-    const [timer, setTimer] = useState(null);
+    const [autospin, setAutospin] = useState(false);
+
+    useEffect(() => {
+        let t;
+        if (autospin) {
+            t = setInterval(() => {
+                if (context.finished) {
+                    setContext(generateSlotContext());
+                }
+            }, 3000);
+        }
+        return () => clearTimeout(t);
+    }, [autospin, context]);
 
     return (
         <SlotContext.Provider value={[context, setContext]}>
@@ -17,7 +29,7 @@ function App() {
                     Ultraways: {context.megaways}
                     <Slot/>
                     <button onClick={spin}>Spin</button>
-                    <button onClick={autoSpin}>Auto</button>
+                    <button onClick={toggleAutoSpin}>Auto</button>
                 </div>
             </div>
         </SlotContext.Provider>
@@ -27,15 +39,8 @@ function App() {
         setContext(generateSlotContext());
     }
 
-    function autoSpin() {
-        if (!timer) {
-            const t = setInterval(() => {
-                setContext(generateSlotContext());
-            }, 3000);
-            setTimer(t);
-        } else {
-            clearTimeout(timer);
-        }
+    function toggleAutoSpin() {
+        setAutospin(!autospin);
     }
 }
 
