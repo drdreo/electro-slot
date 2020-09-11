@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useContext, useState} from "react";
+import "./App.css";
+import Header from "./components/Header";
+import Slot from "./components/Slot/Slot";
+import {generateSlotContext, SlotContext} from "./context/slot-context";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [context, setContext] = useState(useContext(SlotContext));
+    const [timer, setTimer] = useState(null);
+
+    return (
+        <SlotContext.Provider value={[context, setContext]}>
+
+            <div className="App">
+                <Header/>
+                <div className="container">
+                    Ultraways: {context.megaways}
+                    <Slot/>
+                    <button onClick={spin}>Spin</button>
+                    <button onClick={autoSpin}>Auto</button>
+                </div>
+            </div>
+        </SlotContext.Provider>
+    );
+
+    function spin() {
+        setContext(generateSlotContext());
+    }
+
+    function autoSpin() {
+        if (!timer) {
+            const t = setInterval(() => {
+                setContext(generateSlotContext());
+            }, 3000);
+            setTimer(t);
+        } else {
+            clearTimeout(timer);
+        }
+    }
 }
 
 export default App;
