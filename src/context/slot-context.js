@@ -8,6 +8,7 @@ export function generateSlotContext() {
     return {
         matrix,
         megaways: calculateMegaways(matrix),
+        win: null,
         finished: false
     };
 }

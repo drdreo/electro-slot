@@ -2,13 +2,17 @@ import React, {useContext} from "react";
 import styled from "styled-components";
 import Symbol from "../Symbol";
 import {SlotContext} from "../../context/slot-context";
-import {calculateHit, getCountSymbolsInReel, getRandom} from "../../utils";
+import {calculateHit, calculateWin, getCountSymbolsInReel, getRandom} from "../../utils";
 
 const StyledSlotContainer = styled.div`
   position:relative;
   background-color: #EEE;
 
-  width: 600px;
+  width: 90vw;
+  @media (min-width: 768px) {
+    width: 600px;
+  }  
+  
   height: 600px;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -16,7 +20,7 @@ const StyledSlotContainer = styled.div`
   grid-gap: 6px;
 `;
 
-const Slot = () => {
+const Slot = (props) => {
     const [context, setContext] = useContext(SlotContext);
     const matrix = context.matrix;
     const finishedReels = [];
@@ -63,7 +67,6 @@ const Slot = () => {
         }
         if (finished && !context.finished) {
             const newMatrix = [...matrix];
-            console.log(newMatrix);
             const hits = calculateHit(newMatrix);
             console.log(hits);
 
@@ -76,10 +79,15 @@ const Slot = () => {
                         }
                     });
                 }
-
             }
 
             let newContext = {...context, finished: true};
+            newContext.win = calculateWin(hits);
+
+            if (newContext.win) {
+                props.onWin(newContext.win);
+            }
+
             if (hits.length) {
                 console.log(newMatrix);
                 newContext.matrix = newMatrix;

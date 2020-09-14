@@ -90,6 +90,46 @@ export function calculateHit(matrix) {
     return hits;
 }
 
+export function calculateWin(hits) {
+
+    let totalWin = 0;
+
+    for (let hit of hits) {
+        let win = 1;
+
+        const groupedSymbols = groupBy(hit.symbols, sym => sym.position.r);
+        const symbolValue = getValueOfSymbol(hit.symbols[0].value, groupedSymbols.size);
+
+        groupedSymbols.forEach(symbols => {
+            win *= symbols.length;
+        });
+
+        win *= symbolValue;
+        console.log(`Symbol ${hit.symbols[0].value} pays ${win}x`);
+
+        totalWin += win;
+    }
+
+    return totalWin ? round(totalWin, 2) : null;
+}
+
+
+function getValueOfSymbol(symbol, connectedReels) {
+
+    const payTable = {
+        1: [0.1, 0.2, 0.3, 0.4],
+        2: [0.1, 0.2, 0.3, 0.4],
+        3: [0.1, 0.2, 0.3, 0.4],
+        4: [0.2, 0.3, 0.6, 1],
+        5: [0.2, 0.3, 0.6, 1],
+        6: [0.2, 0.3, 0.6, 1],
+        7: [0.5, 1, 2.5, 5],
+        8: [0.5, 1, 2.5, 5]
+    };
+
+    return payTable[symbol][connectedReels - 3];
+}
+
 class Hit {
     symbols = [];
     value;
@@ -105,4 +145,36 @@ class Hit {
     hasAlreadyHit(value) {
         return this.symbols.some(sym => sym.value === value);
     }
+}
+
+
+function round(num, X) {
+    return +(Math.round(num + "e+" + X) + "e-" + X);
+}
+
+/**
+ * @description
+ * Takes an Array<V>, and a grouping function,
+ * and returns a Map of the array grouped by the grouping function.
+ *
+ * @param list An array of type V.
+ * @param keyGetter A Function that takes the the Array type V as an input, and returns a value of type K.
+ *                  K is generally intended to be a property key of V.
+ *
+ * @returns Map of the array grouped by the grouping function.
+ */
+//export function groupBy<K, V>(list: Array<V>, keyGetter: (input: V) => K): Map<K, Array<V>> {
+//    const map = new Map<K, Array<V>>();
+function groupBy(list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
+    });
+    return map;
 }
