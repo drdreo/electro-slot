@@ -10,7 +10,7 @@ function generateReel(reelNum) {
 
     const reel = [];
     while (totalHeight < maxHeight) {
-        let symbolHeight = getRandom(1, 4);
+        let symbolHeight = getRandom(1, 6);
         if (totalHeight + symbolHeight > maxHeight) {
             symbolHeight = maxHeight - totalHeight;
         }
@@ -25,7 +25,6 @@ function generateReel(reelNum) {
         }
         totalHeight += symbolHeight;
     }
-
     return reel;
 }
 
@@ -34,7 +33,6 @@ export function generateMatrix() {
     for (let i = 0; i < 6; i++) {
         matrix.push(generateReel(i));
     }
-
     return matrix;
 }
 
@@ -91,7 +89,6 @@ export function calculateHit(matrix) {
 }
 
 export function calculateWin(hits) {
-
     let totalWin = 0;
 
     for (let hit of hits) {
@@ -105,8 +102,6 @@ export function calculateWin(hits) {
         });
 
         win *= symbolValue;
-        console.log(`Symbol ${hit.symbols[0].value} pays ${win}x`);
-
         totalWin += win;
     }
 

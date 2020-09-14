@@ -1,9 +1,40 @@
-// test("detects a hit", () => {
-//     const hits = calculateHit(mockData);
-//     hits.map(hit => console.log(hit.symbols));
-//     expect(hits.length).toEqual(2);
-// });
+import {calculateHit, calculateWin, generateMatrix} from "./utils";
 
+test("detects a hit", () => {
+    const hits = calculateHit(mockData);
+    hits.map(hit => console.log(hit.symbols));
+    expect(hits.length).toEqual(2);
+});
+
+
+test("should be balanced", () => {
+
+    let totalWin = 0;
+    let biggestWin = 0;
+    let amountSpins = 100000;
+    let amountBigHits = 0;
+
+    for (let spins = 0; spins < amountSpins; spins++) {
+        const matrix = generateMatrix();
+        const hits = calculateHit(matrix);
+        const win = calculateWin(hits) || 0;
+        if (biggestWin < win) {
+            biggestWin = win;
+        }
+
+        if (win > 100) {
+            amountBigHits++;
+        }
+        totalWin += win;
+    }
+
+    const effectiveWin = totalWin - amountSpins;
+    console.log({biggestWin});
+    console.log({amountBigHits});
+    console.log({effectiveWin});
+    console.log({rtp: 100 * totalWin / amountSpins});
+    expect(effectiveWin).toBeLessThanOrEqual(0);
+});
 export const mockData = [
     [
         {value: 1, height: 2},
