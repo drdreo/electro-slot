@@ -2,7 +2,8 @@ import React from "react";
 import styled from "styled-components";
 
 const StyledContainer = styled.div`
-  > .heading{
+  padding: 1rem;
+  .heading{
       font-weight: bold;
       font-size: 24px;
       margin: 0;
@@ -12,7 +13,7 @@ const StyledContainer = styled.div`
 const Header = () => {
     return (
         <StyledContainer>
-            <h1 className="heading">ElectroSlot</h1>
+            <h1 className="heading">Electro Ultraways</h1>
         </StyledContainer>
     );
 };

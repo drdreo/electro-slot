@@ -1,10 +1,9 @@
 import React from "react";
-import {calculateMegaways, generateMatrix} from "../utils";
-
+import {calculateMegaways, generateRiggedMatrix} from "../utils";
 
 
 export function generateSlotContext() {
-    const matrix = generateMatrix();
+    const matrix = generateRiggedMatrix();
     return {
         matrix,
         megaways: calculateMegaways(matrix),

@@ -1,9 +1,10 @@
 import React, {useContext, useEffect, useState} from "react";
-import "./App.css";
+import "./App.scss";
 import Header from "./components/Header";
 import Slot from "./components/Slot/Slot";
 import {generateSlotContext, SlotContext} from "./context/slot-context";
 import GlobalStats from "./components/GlobalStats";
+import WinPopup from "./components/WinPopup";
 
 function App() {
     const [context, setContext] = useState(useContext(SlotContext));
@@ -19,10 +20,10 @@ function App() {
                 if (context.finished) {
                     spin();
                 }
-            }, 2000);
+            }, context.win ? 2000 : 100);
         }
         return () => clearTimeout(t);
-    }, [autospin, context]);
+    }, [autospin, context.finished, context.win]);
 
     return (
         <SlotContext.Provider value={[context, setContext]}>
@@ -34,10 +35,13 @@ function App() {
                 <div className="container">
                     Ultraways: {context.megaways}
                     <Slot onWin={onWin}/>
-                    <button onClick={spin}>Spin</button>
-                    <button onClick={toggleAutoSpin}>Auto</button>
+                    <div className="controls">
+                        <button className="button" onClick={spin}>Spin</button>
+                        <button className={`button ${autospin ? "success" : "light"}`} onClick={toggleAutoSpin}>Auto</button>
+                    </div>
+
                     {context.win &&
-                    <p>Win: {context.win}X</p>
+                    <WinPopup>Win: {context.win}X</WinPopup>
                     }
                 </div>
             </div>

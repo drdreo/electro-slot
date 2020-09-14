@@ -1,4 +1,4 @@
-import {calculateHit, calculateWin, generateMatrix} from "./utils";
+import {calculateHit, calculateMegaways, calculateWin, generateMatrix, generateRiggedMatrix} from "./utils";
 
 test("detects a hit", () => {
     const hits = calculateHit(mockData);
@@ -15,7 +15,7 @@ test("should be balanced", () => {
     let amountBigHits = 0;
 
     for (let spins = 0; spins < amountSpins; spins++) {
-        const matrix = generateMatrix();
+        let matrix = generateRiggedMatrix();
         const hits = calculateHit(matrix);
         const win = calculateWin(hits) || 0;
         if (biggestWin < win) {

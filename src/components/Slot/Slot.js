@@ -9,11 +9,12 @@ const StyledSlotContainer = styled.div`
   background-color: #EEE;
 
   width: 90vw;
+  height: 80vh;
   @media (min-width: 768px) {
     width: 600px;
+    height: 600px;
   }  
   
-  height: 600px;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   grid-template-rows: repeat(8, minmax(0, 1fr));

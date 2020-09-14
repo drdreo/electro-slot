@@ -1,0 +1,79 @@
+@import "assets/styles/utils";
+
+.App {
+  background-color: #282c34;
+  min-height: 100vh;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls {
+  margin: 0.75rem;
+
+  * {
+    margin-right: 0.5rem;
+  }
+}
+
+.button {
+  padding: .75rem;
+  box-sizing: border-box;
+
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  font-size: 1rem;
+  color: white;
+  background-color: $button-background-color;
+  transition: background-color .17s ease, color .17s ease;
+
+  &:hover, &:focus {
+    background-color: transparentize($button-background-color, 0.1); //#677bc4
+  }
+
+
+  &[disabled] {
+    background-color: gray;
+    cursor: initial;
+
+    &:hover {
+      background-color: gray;
+    }
+  }
+
+  &.light {
+    color: #080808;
+    background-color: $gray;
+
+    &:hover, &:focus {
+      background-color: transparentize($gray, 0.1);
+    }
+  }
+
+  &.success {
+    color: white;
+    background-color: $success-color;
+
+    &:hover, &:focus {
+      background-color: transparentize($success-color, 0.1);
+    }
+  }
+
+  &.danger {
+    color: #080808;
+    background-color: $danger-color;
+
+    &:hover, &:focus {
+      background-color: transparentize($danger-color, 0.1);
+    }
+  }
+}

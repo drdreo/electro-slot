@@ -4,13 +4,13 @@ export function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateReel(reelNum) {
+function generateReel(reelNum, rig) {
     let totalHeight = 0;
     const maxHeight = 8;
 
     const reel = [];
     while (totalHeight < maxHeight) {
-        let symbolHeight = getRandom(1, 6);
+        let symbolHeight = getRandom(1, rig ? 3 : 6);
         if (totalHeight + symbolHeight > maxHeight) {
             symbolHeight = maxHeight - totalHeight;
         }
@@ -28,10 +28,31 @@ function generateReel(reelNum) {
     return reel;
 }
 
-export function generateMatrix() {
+export function generateMatrix(rig) {
     const matrix = [];
     for (let i = 0; i < 6; i++) {
-        matrix.push(generateReel(i));
+        matrix.push(generateReel(i, rig));
+    }
+    return matrix;
+}
+
+let shitSpins = 0;
+
+export function generateRiggedMatrix() {
+    let matrix = generateMatrix();
+    let megaways = calculateMegaways(matrix);
+    const hit = calculateHit(matrix);
+
+    if (hit > 10) {
+        shitSpins = 0;
+    }
+    // little help
+    if (megaways < 1000) {
+        shitSpins++;
+        if (shitSpins >= 50) {
+            matrix = generateMatrix(true);
+            shitSpins = 0;
+        }
     }
     return matrix;
 }
@@ -111,18 +132,29 @@ export function calculateWin(hits) {
 
 function getValueOfSymbol(symbol, connectedReels) {
 
-    const payTable = {
+    const og_payTable = {
         1: [0.1, 0.2, 0.3, 0.4],
         2: [0.1, 0.2, 0.3, 0.4],
         3: [0.1, 0.2, 0.3, 0.4],
-        4: [0.2, 0.3, 0.6, 1],
-        5: [0.2, 0.3, 0.6, 1],
-        6: [0.2, 0.3, 0.6, 1],
-        7: [0.5, 1, 2.5, 5],
+        4: [0.2, 0.4, 0.6, 1],
+        5: [0.2, 0.4, 0.6, 1],
+        6: [0.2, 0.4, 0.6, 1],
+        7: [0.5, 1, 2, 4],
         8: [0.5, 1, 2.5, 5]
     };
 
-    return payTable[symbol][connectedReels - 3];
+    const rig_payTable = {
+        1: [0.05, 0.1, 0.2, 0.3],
+        2: [0.05, 0.1, 0.2, 0.3],
+        3: [0.05, 0.1, 0.2, 0.3],
+        4: [0.1, 0.2, 0.3, 0.4],
+        5: [0.1, 0.2, 0.3, 0.4],
+        6: [0.1, 0.2, 0.3, 0.4],
+        7: [0.3, 0.4, 0.5, 0.5],
+        8: [0.3, 0.4, 0.5, 0.5]
+    };
+
+    return og_payTable[symbol][connectedReels - 3];
 }
 
 class Hit {
