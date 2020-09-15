@@ -8,7 +8,7 @@ import {ReactComponent as Transistor} from "../assets/transistor.svg";
 import {ReactComponent as Processor} from "../assets/processor.svg";
 import {ReactComponent as CPU} from "../assets/cpu.svg";
 import {ReactComponent as GPU} from "../assets/gpu.svg";
-import {ReactComponent as Wild} from "../assets/wild.svg";
+import {ReactComponent as Wild} from "../assets/bolts.svg";
 import {getRandom} from "../utils";
 import {SlotContext} from "../context/slot-context";
 
@@ -28,13 +28,16 @@ const StyledSymbolContainer = styled.div`
   display: flex;
   justify-content: center;
   align-content: center;
-  background-color: #fff;
+  background-color: ${props => props.hit ? "#f5efbf" : "#fff"};
   color: #000;
   overflow: hidden;
   padding: 3px;
   border: ${props => props.hit ? "2px solid gold" : ""};
-  transition: all 500ms ease;
-  
+  transition: transform ${props => props.timer ? props.timer : 1000}ms cubic-bezier(0, -0.5, 0, 1.5);
+
+  &.spinning{
+    transform: translateY(${props => !props.finished ? "-1000px" : ""});
+  }
   .inner {
     position:relative;
     display: flex;
@@ -63,7 +66,7 @@ const Symbol = (props) => {
             setSpinning(false);
         }, getRandom(90, 150));
         return () => clearTimeout(t);
-    }, []);
+    }, [setSpinning]);
 
     useEffect(() => {
         const t = setTimeout(() => {
@@ -73,7 +76,7 @@ const Symbol = (props) => {
     }, [onFinish, timer]);
 
     return (
-        <StyledSymbolContainer timer={timer} hit={hit} style={style} finished={context.finished}>
+        <StyledSymbolContainer timer={timer} hit={hit} style={style} finished={context.finished} >
             <div className={`inner ${spinning ? "spinning" : ""}`}>
                 <SymbolTag className="image"/>
             </div>

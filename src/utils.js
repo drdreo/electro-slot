@@ -4,19 +4,19 @@ export function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateReel(reelNum, rig) {
+function generateReel(reelNum, shitSpins) {
     let totalHeight = 0;
     const maxHeight = 8;
 
     const reel = [];
     while (totalHeight < maxHeight) {
-        let symbolHeight = getRandom(1, rig ? 3 : 6);
+        const riggedHeight = !!shitSpins && (6 - Math.floor(shitSpins / 5) > 1) ? 6 - Math.floor(shitSpins / 5) : 6;
+        let symbolHeight = getRandom(1, riggedHeight);
         if (totalHeight + symbolHeight > maxHeight) {
             symbolHeight = maxHeight - totalHeight;
         }
 
-        // prevent wilds in first reel due to hit detection problem
-        const value = reelNum === 0 ? getRandom(1, 8) : getRandom(1, 9);
+        const value = getRandomSymbol(reelNum);
         reel.push({value, height: symbolHeight});
 
         // insert null values for height
@@ -28,10 +28,10 @@ function generateReel(reelNum, rig) {
     return reel;
 }
 
-export function generateMatrix(rig) {
+export function generateMatrix(shitSpins) {
     const matrix = [];
     for (let i = 0; i < 6; i++) {
-        matrix.push(generateReel(i, rig));
+        matrix.push(generateReel(i, shitSpins));
     }
     return matrix;
 }
@@ -41,16 +41,22 @@ let shitSpins = 0;
 export function generateRiggedMatrix() {
     let matrix = generateMatrix();
     let megaways = calculateMegaways(matrix);
-    const hit = calculateHit(matrix);
+    let hits = calculateHit(matrix);
+    let win = calculateWin(hits);
 
-    if (hit > 10) {
+    // console.log({shitSpins});
+    if (win >= 10 || megaways > 5000) {
         shitSpins = 0;
     }
+
     // little help
     if (megaways < 1000) {
         shitSpins++;
-        if (shitSpins >= 50) {
-            matrix = generateMatrix(true);
+        matrix = generateMatrix(shitSpins);
+        megaways = calculateMegaways(matrix);
+        hits = calculateHit(matrix);
+        win = calculateWin(hits);
+        if (win >= 10 || megaways > 5000) {
             shitSpins = 0;
         }
     }
@@ -133,14 +139,14 @@ export function calculateWin(hits) {
 function getValueOfSymbol(symbol, connectedReels) {
 
     const og_payTable = {
-        1: [0.1, 0.2, 0.3, 0.4],
-        2: [0.1, 0.2, 0.3, 0.4],
-        3: [0.1, 0.2, 0.3, 0.4],
-        4: [0.2, 0.4, 0.6, 0.8],
-        5: [0.2, 0.4, 0.6, 0.8],
-        6: [0.2, 0.4, 0.6, 1],
-        7: [0.5, 1, 2, 4],
-        8: [0.5, 1, 2.5, 5]
+        1: [0.1, 0.25, 0.5, 0.7],
+        2: [0.1, 0.25, 0.5, 0.7],
+        3: [0.1, 0.25, 0.5, 0.7],
+        4: [0.5, 0.6, 0.7, 1],
+        5: [0.5, 0.6, 0.7, 1],
+        6: [0.5, 0.7, 1, 1.25],
+        7: [1, 1.5, 2, 4],
+        8: [1, 1.5, 3, 5]
     };
 
     const rig_payTable = {
@@ -177,6 +183,29 @@ class Hit {
 
 function round(num, X) {
     return +(Math.round(num + "e+" + X) + "e-" + X);
+}
+
+function getRandomSymbol(reelNum) {
+
+    // prevent wilds in first reel due to hit detection problem
+    if (reelNum === 0) {
+        return getRandom(1, 8);
+    }
+
+    let symbol;
+    const symbolRange = getRandom(1, 99);
+
+    if (symbolRange > 95) {
+        symbol = 9;
+    } else if (symbolRange >= 60) {
+        symbol = getRandom(6, 8);
+    } else if (symbolRange >= 40) {
+        symbol = getRandom(4, 5);
+    } else {
+        symbol = getRandom(1, 3);
+    }
+
+    return symbol;
 }
 
 /**

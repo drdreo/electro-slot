@@ -16,6 +16,9 @@ const StyledContainer = styled.div`
     .entry{
     display: flex;
     justify-content: space-between;
+    span {
+      color: white;
+    }
     }
 `;
 
@@ -23,9 +26,9 @@ const GlobalStats = (props) => {
     const {totalSpins, effectiveWin, biggestHit} = props;
     return (
         <StyledContainer>
-            <div className="entry">Spins: <b>{totalSpins}</b></div>
-            <div className="entry">Total: <b>{effectiveWin.toFixed(2)}x</b></div>
-            <div className="entry">Biggest Hit: <b>{biggestHit}x</b></div>
+            <div className="entry">Spins: <span>{totalSpins}</span></div>
+            <div className="entry">Total: <span>{effectiveWin.toFixed(2)}x</span></div>
+            <div className="entry">Biggest Hit: <span>{biggestHit}x</span></div>
         </StyledContainer>
     );
 };

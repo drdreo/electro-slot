@@ -33,11 +33,14 @@ function App() {
                 <GlobalStats totalSpins={totalSpins} effectiveWin={totalWin - totalSpins} biggestHit={biggestHit}/>
 
                 <div className="container">
-                    Ultraways: {context.megaways}
+                    <div className="ultraways">
+                        {context.megaways} Ultraways
+                    </div>
                     <Slot onWin={onWin}/>
                     <div className="controls">
-                        <button className="button" onClick={spin}>Spin</button>
-                        <button className={`button ${autospin ? "success" : "light"}`} onClick={toggleAutoSpin}>Auto</button>
+                        <button className="button" onClick={spin} disabled={!context.finished}>Spin</button>
+                        <button className={`button ${autospin ? "success" : "light"}`} onClick={toggleAutoSpin}>Auto
+                        </button>
                     </div>
 
                     {context.win &&

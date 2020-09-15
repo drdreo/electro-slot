@@ -8,6 +8,7 @@ const StyledSlotContainer = styled.div`
   position:relative;
   background-color: #EEE;
 
+overflow:hidden;
   width: 90vw;
   height: 80vh;
   @media (min-width: 768px) {
@@ -69,7 +70,6 @@ const Slot = (props) => {
         if (finished && !context.finished) {
             const newMatrix = [...matrix];
             const hits = calculateHit(newMatrix);
-            console.log(hits);
 
             for (let hit of hits) {
                 // mark all symbols in hit reel
@@ -78,6 +78,7 @@ const Slot = (props) => {
                         if (symbol && (symbol.value === hit.value || symbol.value === 9)) {
                             symbol.hit = true;
                         }
+                        return symbol;
                     });
                 }
             }
@@ -89,8 +90,8 @@ const Slot = (props) => {
                 props.onWin(newContext.win);
             }
 
+            // if slot has hits
             if (hits.length) {
-                console.log(newMatrix);
                 newContext.matrix = newMatrix;
             }
             setContext(newContext);
